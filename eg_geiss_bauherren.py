@@ -51,7 +51,7 @@ def load(filename):
                 ISO_CAL_KW_LOC = 1
                 kwStartDate = startDateParsed.isocalendar()[ISO_CAL_KW_LOC]
                 if kw < kwStartDate:
-                    blowerdoorDate = "{} KW-{}".format(startDateParsed.year +1, kw)
+                    blowerdoorDate = "{} KW-{:02d}".format(startDateParsed.year +1, kw)
                 else:
                     blowerdoorDate = "{} KW-{}".format(startDateParsed.year, kw)
 

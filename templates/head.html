@@ -17,6 +17,15 @@
 <!-- mdb -->
 <link href="/static/css/mdb.min.css" rel="stylesheet">
 <script defer src="/static/js/mdb.min.js"></script>
+<script defer src="/static/js/addons/datatables.min.js"></script>
 
 <!-- Custom JS/CSS -->
 <link href="/static/site.css" rel="stylesheet">
+
+<script>
+function datesSorter(a, b) {
+    if (new Date(a) < new Date(b)) return 1;
+    if (new Date(a) > new Date(b)) return -1;
+    return 0;
+  }
+</script>

@@ -11,11 +11,11 @@
             cellspacing="0">
         <thead>
             <tr>
-                <th class="th-sm font-weight-bold">Dokument</th>
+                <th class="th-sm sorting font-weight-bold">Dokument</th>
                 <th class="th-sm font-weight-bold">Ort</th>
                 <th class="th-sm font-weight-bold">Blowerdoor KW</th>
                 <th class="th-sm font-weight-bold">Bauherr</th>
-                <th class="th-sm font-weight-bold">Dokument Erstellungsdatum</th>
+                <th data-sorter="datesSorter" class="th-sm font-weight-bold">Dokument Erstellungsdatum (Jahr/Monat/Tag)</th>
             </tr>
         </thead>
         <tbody>
@@ -25,7 +25,7 @@
                <td style="line-height: 45px;">{{ bd.location }}</td>
                <td style="line-height: 45px;">{{ bd.blowerdoorDate }}</td>
                <td style="line-height: 45px;">{{ bd.customer }}</td>
-               <td style="line-height: 45px;">{{ bd.pdfDate.strftime("%d.%m.%Y") }}</td>
+               <td style="line-height: 45px;">{{ bd.pdfDate.strftime("%Y/%m/%d") }}</td>
            </tr>
            {% endfor %}
         </tbody>
@@ -33,7 +33,9 @@
 
     <script defer>
         $(document).ready(function () {
-            $('#tableMain').DataTable();
+            $('#tableMain').DataTable({
+                "order" : [[ 3, "desc" ]]
+            });
             $('.dataTables_length').addClass('bs-select');
         });
     </script>
