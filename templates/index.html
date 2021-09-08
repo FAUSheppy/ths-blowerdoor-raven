@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+	{% include 'head.html' %}
+</head>
+
+<body>
+  {% include 'navbar.html' %}
+  <div style="font-size: 16px; font-weight: 300;" class="container mt-5 mb-3" role="main">
+    <table id="tableMain" class="table table-striped table-bordered table-sm"
+            cellspacing="0">
+        <thead>
+            <tr>
+                <th class="th-sm font-weight-bold">Dokument</th>
+                <th class="th-sm font-weight-bold">Ort</th>
+                <th class="th-sm font-weight-bold">Blowerdoor KW</th>
+                <th class="th-sm font-weight-bold">Bauherr</th>
+                <th class="th-sm font-weight-bold">Dokument Erstellungsdatum</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bd in listContent %}
+            <tr>
+               <td style="line-height: 45px;"><a target="_blank" href="/get-file?basename={{ bd.docName }}">{{ bd.docName }}</a></td>
+               <td style="line-height: 45px;">{{ bd.location }}</td>
+               <td style="line-height: 45px;">{{ bd.blowerdoorDate }}</td>
+               <td style="line-height: 45px;">{{ bd.customer }}</td>
+               <td style="line-height: 45px;">{{ bd.pdfDate.strftime("%d.%m.%Y") }}</td>
+           </tr>
+           {% endfor %}
+        </tbody>
+    </table>    
+
+    <script defer>
+        $(document).ready(function () {
+            $('#tableMain').DataTable();
+            $('.dataTables_length').addClass('bs-select');
+        });
+    </script>
+  </div>
+</body>
+
+</html>
