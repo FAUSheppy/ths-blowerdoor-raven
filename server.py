@@ -15,12 +15,26 @@ def root():
     allFiles = []
     loaded = None
     for filename in glob.glob("static/files/*.pdf"):
+        loaded = parserBackend.load(filename)
         try:
             loaded = parserBackend.load(filename)
         except Exception:
             loaded = BlowerdoorData(os.path.basename(filename), os.path.basename(filename), "", "", datetime.datetime.now(), datetime.datetime.now())
         allFiles.append(loaded)
+
+    # check duplicates
+    duplicateCheckMap = dict()
+    for f in allFiles:
+        if f.inDocumentDate:
+            duplicateCheckMap.update({ f.customer + f.location : f })
     
+    for f in allFiles:
+        key = f.customer + f.location
+        if key in duplicateCheckMap and not f is duplicateCheckMap[key]:
+            if f.inDocumentDate <= duplicateCheckMap[key].inDocumentDate:
+                f.outdated = True
+
+
     return flask.render_template("index.html", listContent=allFiles)
 
 @app.route("/get-file")
