@@ -22,7 +22,7 @@
             {% for bd in listContent %}
             <tr>
                <td style="line-height: 45px;"><a target="_blank" href="/get-file?basename={{ bd.docName }}">{{ bd.docName }}</a>
-                {% if bd.outdated %}<p style="color: red;">(älter: {{ bd.inDocumentDate.strftime("%d.%m.%Y") }})</p>{% endif %}
+                {% if bd.outdated %}<p style="color: red;">(neueres Dokument verfügbar: {{ bd.inDocumentDate.strftime("%d.%m.%Y") }})</p>{% endif %}
                </td>
                <td style="line-height: 45px;">{{ bd.location }}</td>
                {% if bd.blowerdoorDate %}
