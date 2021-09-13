@@ -23,7 +23,11 @@
             <tr>
                <td style="line-height: 45px;"><a target="_blank" href="/get-file?basename={{ bd.docName }}">{{ bd.docName }}</a></td>
                <td style="line-height: 45px;">{{ bd.location }}</td>
+               {% if bd.blowerdoorDate %}
                <td style="line-height: 45px;">{{ bd.blowerdoorDate }}</td>
+               {% else %}
+               <td style="line-height: 45px;">0000 - Keine Informationen Gefunden</td>
+               {% endif %}
                <td style="line-height: 45px;">{{ bd.customer }}</td>
                <td style="line-height: 45px;">{{ bd.pdfDate.strftime("%Y/%m/%d") }}</td>
            </tr>

@@ -7,6 +7,7 @@ import os.path
 BLOCK_TUP_TEXT = 4
 
 def load(filename):
+    print(filename)
     doc = fitz.open(filename)
     FIRST_P = True
 
@@ -32,6 +33,7 @@ def load(filename):
             if "Bauort:" in text:
                 location += text.split("Bauort:")[1]
 
+            kwErrorInfo = None
             if "Thermoscan" in text:
                 kwParts = text.split("\n")
                 kw = ""
@@ -42,7 +44,10 @@ def load(filename):
                     if not pClean:
                         continue
                     elif not kw:
-                        kw = int(pClean.split(". KW")[0])
+                        try:
+                            kw = int(pClean.split(". KW")[0])
+                        except ValueError:
+                            kwErrorInfo = "Kalenderwochen Info nicht gefunden."
                     elif not title:
                         title = pClean
                     elif not contractor:
@@ -50,10 +55,14 @@ def load(filename):
 
                 ISO_CAL_KW_LOC = 1
                 kwStartDate = startDateParsed.isocalendar()[ISO_CAL_KW_LOC]
-                if kw < kwStartDate:
-                    blowerdoorDate = "{} KW-{:02d}".format(startDateParsed.year +1, kw)
+
+                if kwErrorInfo:
+                    blowerdoorDate = None
                 else:
-                    blowerdoorDate = "{} KW-{}".format(startDateParsed.year, kw)
+                    if kw < kwStartDate:
+                        blowerdoorDate = "{} KW-{:02d}".format(startDateParsed.year +1, kw)
+                    else:
+                        blowerdoorDate = "{} KW-{}".format(startDateParsed.year, kw)
 
 
 
