@@ -2,6 +2,9 @@ import flask
 import argparse
 import glob
 import os
+from data import BlowerdoorData
+import datetime
+import os.path
 
 import eg_geiss_bauherren as parserBackend
 
@@ -10,9 +13,28 @@ app = flask.Flask("THS-Raven")
 @app.route("/")
 def root():
     allFiles = []
+    loaded = None
     for filename in glob.glob("static/files/*.pdf"):
-        allFiles.append(parserBackend.load(filename))
+        loaded = parserBackend.load(filename)
+        try:
+            loaded = parserBackend.load(filename)
+        except Exception:
+            loaded = BlowerdoorData(os.path.basename(filename), os.path.basename(filename), "", "", datetime.datetime.now(), datetime.datetime.now())
+        allFiles.append(loaded)
+
+    # check duplicates
+    duplicateCheckMap = dict()
+    for f in allFiles:
+        if f.inDocumentDate:
+            duplicateCheckMap.update({ f.customer + f.location : f })
     
+    for f in allFiles:
+        key = f.customer + f.location
+        if key in duplicateCheckMap and not f is duplicateCheckMap[key]:
+            if f.inDocumentDate <= duplicateCheckMap[key].inDocumentDate:
+                f.outdated = True
+
+
     return flask.render_template("index.html", listContent=allFiles)
 
 @app.route("/get-file")
