@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import flask
 import argparse
 import glob
@@ -5,13 +7,24 @@ import os
 from data import BlowerdoorData
 import datetime
 import os.path
+import werkzeug.utils
 
 import eg_geiss_bauherren as parserBackend
 
 app = flask.Flask("THS-Raven")
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def root():
+    if flask.request.method == 'POST':
+        fileObj = flask.request.files['file']
+        fname = werkzeug.utils.secure_filename(fileObj.filename)
+        fullpath = os.path.join('static/files/', fname)
+        if not fname.endswith(".pdf"):
+            return (405, "Datei ist kein PDF")
+        else:
+            fileObj.save(fullpath)
+            return flask.redirect("/")
+
     allFiles = []
     loaded = None
     for filename in glob.glob("static/files/*.pdf"):
