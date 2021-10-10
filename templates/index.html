@@ -29,13 +29,19 @@
                <td style="line-height: 45px;"><a target="_blank" href="/get-file?basename={{ bd.docName }}">{{ bd.docName }}</a>
                 {% if bd.outdated %}<p style="color: red;">(neueres Dokument verfügbar: {{ bd.inDocumentDate.strftime("%d.%m.%Y") }})</p>{% endif %}
                </td>
-               <td style="line-height: 45px;">{{ bd.location }}</td>
+               <td style="line-height: 45px; 
+                            {% if bd.location == "Fehler" %}color: red;
+                            {% endif %}">
+                       {{ bd.location }}</td>
                {% if bd.blowerdoorDate %}
                <td style="line-height: 45px;">{{ bd.blowerdoorDate }}</td>
                {% else %}
                <td style="line-height: 45px;">0000 - Keine Informationen Gefunden</td>
                {% endif %}
-               <td style="line-height: 45px;">{{ bd.customer }}</td>
+               <td style="line-height: 45px; 
+                            {% if bd.location == "Fehler" %}color: red;
+                            {% endif %}">
+                        {{ bd.customer }}</td>
                <td style="line-height: 45px;">{{ bd.pdfDate.strftime("%Y/%m/%d") }}</td>
            </tr>
            {% endfor %}

@@ -28,11 +28,10 @@ def root():
     allFiles = []
     loaded = None
     for filename in glob.glob("static/files/*.pdf"):
-        loaded = parserBackend.load(filename)
         try:
             loaded = parserBackend.load(filename)
         except Exception:
-            loaded = BlowerdoorData(os.path.basename(filename), os.path.basename(filename), "", "", datetime.datetime.now(), datetime.datetime.now())
+            loaded = BlowerdoorData(os.path.basename(filename), os.path.basename(filename), "Fehler", "Fehler", datetime.datetime.now(), datetime.datetime.now())
         allFiles.append(loaded)
 
     # check duplicates
