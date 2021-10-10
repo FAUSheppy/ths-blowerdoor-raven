@@ -3,7 +3,7 @@ This small flask server parses PDFs and looks for blowerdoor relevant informatio
 
 ![THS-Blowerdoor Rave Web-Interface](https://m.athq.de/pictures/blowerdoor-raven.png)
 
-## System Example
+## Systemd Example
 
     [Unit]
     Description=THS Blowerdoor Raven blowerdoor.ths.atlantishq.de
