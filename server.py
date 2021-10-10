@@ -49,9 +49,17 @@ def root():
 
     return flask.render_template("index.html", listContent=allFiles)
 
-@app.route("/get-file")
+@app.route("/get-file", methods=["GET", "POST", "DELETE"])
 def getFile():
-    return flask.send_from_directory("static/files/", flask.request.args.get("basename"), mimetype="application/pdf")
+    print(flask.request.args)
+    if "delete" in flask.request.args:
+        fp = os.path.join("static/files/", flask.request.args.get("delete"))
+        print(fp)
+        os.remove(fp)
+        return flask.redirect("/")
+    else:
+        return flask.send_from_directory("static/files/", 
+                        flask.request.args.get("basename"), mimetype="application/pdf")
 
 @app.before_first_request
 def init():

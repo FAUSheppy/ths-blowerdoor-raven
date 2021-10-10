@@ -43,6 +43,12 @@
                             {% endif %}">
                         {{ bd.customer }}</td>
                <td style="line-height: 45px;">{{ bd.pdfDate.strftime("%Y/%m/%d") }}</td>
+               <td style="line-height: 45px;">
+                    <form onsubmit="return confirm('Wirklich unwideruflich löschen?')"
+                            action="/get-file" method="DELETE">
+                        <button name="delete" value="{{ bd.docName }}">Löschen</button>
+                    </form>
+               </td>
            </tr>
            {% endfor %}
         </tbody>
