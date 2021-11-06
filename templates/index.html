@@ -21,6 +21,7 @@
                 <th class="th-sm font-weight-bold">Blowerdoor KW</th>
                 <th class="th-sm font-weight-bold">Bauherr</th>
                 <th data-sorter="datesSorter" class="th-sm font-weight-bold">Dokument Erstellungsdatum (Jahr/Monat/Tag)</th>
+               <th class="th-sm font-weight-bold"></th>
             </tr>
         </thead>
         <tbody>
@@ -53,11 +54,11 @@
            {% endfor %}
         </tbody>
     </table>    
-
     <script defer>
         $(document).ready(function () {
             $('#tableMain').DataTable({
-                "order" : [[ 3, "desc" ]]
+                "order" : [[ 3, "desc" ]],
+                "paging":   false,
             });
             $('.dataTables_length').addClass('bs-select');
         });
