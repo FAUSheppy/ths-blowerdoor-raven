@@ -1,5 +1,5 @@
 # Blowerdoor PDF parser
-This small flask server parses PDFs and looks for blowerdoor relevant information and displays them in a Web-Interface.
+This small flask server parses PDFs, looks for blowerdoor relevant information and displays them in a Web-Interface.
 
 ![THS-Blowerdoor Rave Web-Interface](https://m.athq.de/pictures/blowerdoor-raven.png)
 
