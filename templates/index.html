@@ -49,6 +49,10 @@
                             action="/get-file" method="DELETE">
                         <button name="delete" value="{{ bd.docName }}">Löschen</button>
                     </form>
+                    <form onsubmit="return confirm('Wirklich als erledigt markieren?')"
+                            action="/mark-done" method="PATCH">
+                        <button name="done" value="{{ bd.docName }}">Erledigt</button>
+                    </form>
                </td>
            </tr>
            {% endfor %}
@@ -62,6 +66,10 @@
             });
             $('.dataTables_length').addClass('bs-select');
         });
+        $('#tableMain').on('click', 'tbody td', function() {
+              console.log('TD cell textContent : ', this.textContent)
+              console.log('location : ', this.parentNode.rowIndex, this.cellIndex)
+        })
     </script>
   </div>
 </body>
