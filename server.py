@@ -3,6 +3,7 @@
 import flask
 import argparse
 import glob
+import json
 import os
 from data import BlowerdoorData
 import datetime
@@ -23,8 +24,9 @@ db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-class DocumentStatus():
-    documentName = Column(String)
+class DocumentStatus(db.Model):
+    __tablename__ = "document_status"
+    documentName = Column(String, primary_key=True)
     done         = Column(Boolean)
 
 @app.route("/", methods=["GET", "POST"])
@@ -61,22 +63,47 @@ def root():
             if f.inDocumentDate <= duplicateCheckMap[key].inDocumentDate:
                 f.outdated = True
 
-    return flask.render_template("index.html", listContent=allFiles)
+    # get done status #
+    statusList = db.session.query(DocumentStatus).all()
+    statusDict = dict()
+    for docStatus in statusList:
+        statusDict.update({ docStatus.documentName  : docStatus.done })
+    for bd in allFiles:
+        if bd.docName in statusDict:
+            bd.done = statusDict[bd.docName]
+
+    # filter which documents to show based on status #
+    showStatusArg = flask.request.args.get("showstatus")
+    if showStatusArg == "done":
+        allFiles = list(filter(lambda bd: not bd.done, allFiles))
+    elif showStatusArg == "notdone":
+        allFiles = list(filter(lambda bd: bd.done, allFiles))
+
+    return flask.render_template("index.html", listContent=allFiles, statusDict=statusDict)
 
 @app.route("/document-status", methods=["GET", "POST", "DELETE"])
 def documentStatus():
-    documentName = flask.request.form.documentName
+    documentName = flask.request.form["documentName"]
     if flask.request.method == "GET":
         status = db.session.query(DocumentStatus).filter(
                         DocumentStatus.documentName == documentName).first()
         return flask.Response(json.dumps(status), 200, mimetype="application/json")
     elif flask.request.method == "POST":
-        status = DocumentStatus()
-        status.documentName = documentName
-        status.done = flask.request.form.done
-        db.session.add(status)
-        db.session.commit()
-        return flask.Response("", 200)
+        status = db.session.query(DocumentStatus).filter(
+                        DocumentStatus.documentName == documentName).first()
+
+        if status:
+            status.done = not status.done
+            db.session.add(status)
+            db.session.commit()
+        else:
+            status = DocumentStatus()
+            status.documentName = documentName
+            status.done = True
+            db.session.add(status)
+            db.session.commit()
+
+        return flask.redirect("/")
     elif flask.request.method == "DELETE":
         status = db.session.query(DocumentStatus).filter(
                         DocumentStatus.documentName == documentName).first()
@@ -90,9 +117,22 @@ def documentStatus():
 def getFile():
     print(flask.request.args)
     if "delete" in flask.request.args:
+
+        # delete main file #
         fp = os.path.join("static/files/", flask.request.args.get("delete"))
         print(fp)
         os.remove(fp)
+
+        # delete assotiated files #
+        # TODO
+
+        # delete the done status #
+        status = db.session.query(DocumentStatus).filter(
+                        DocumentStatus.documentName == flask.request.args.get("delete")).first()
+        if status:
+            db.session.delete(status)
+            db.session.commit()
+
         return flask.redirect("/")
     else:
         return flask.send_from_directory("static/files/", 
