@@ -50,7 +50,7 @@
                         <button name="delete" value="{{ bd.docName }}">Löschen</button>
                     </form>
                     <form onsubmit="return confirm('Wirklich als erledigt markieren?')"
-                            action="/mark-done" method="PATCH">
+                            action="/document-status" method="POST">
                         <button name="done" value="{{ bd.docName }}">Erledigt</button>
                     </form>
                </td>

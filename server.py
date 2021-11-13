@@ -9,9 +9,23 @@ import datetime
 import os.path
 import werkzeug.utils
 
+from sqlalchemy import Column, Integer, String, Boolean, or_, and_
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql import func
+import sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
+
 import eg_geiss_bauherren as parserBackend
 
 app = flask.Flask("THS-Raven")
+db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+class DocumentStatus():
+    documentName = Column(String)
+    done         = Column(Boolean)
 
 @app.route("/", methods=["GET", "POST"])
 def root():
@@ -31,7 +45,8 @@ def root():
         try:
             loaded = parserBackend.load(filename)
         except Exception:
-            loaded = BlowerdoorData(os.path.basename(filename), os.path.basename(filename), "Fehler", "Fehler", datetime.datetime.now(), datetime.datetime.now())
+            loaded = BlowerdoorData(os.path.basename(filename), os.path.basename(filename),
+                            "Fehler", "Fehler", datetime.datetime.now(), datetime.datetime.now())
         allFiles.append(loaded)
 
     # check duplicates
@@ -46,8 +61,30 @@ def root():
             if f.inDocumentDate <= duplicateCheckMap[key].inDocumentDate:
                 f.outdated = True
 
-
     return flask.render_template("index.html", listContent=allFiles)
+
+@app.route("/document-status", methods=["GET", "POST", "DELETE"])
+def documentStatus():
+    documentName = flask.request.form.documentName
+    if flask.request.method == "GET":
+        status = db.session.query(DocumentStatus).filter(
+                        DocumentStatus.documentName == documentName).first()
+        return flask.Response(json.dumps(status), 200, mimetype="application/json")
+    elif flask.request.method == "POST":
+        status = DocumentStatus()
+        status.documentName = documentName
+        status.done = flask.request.form.done
+        db.session.add(status)
+        db.session.commit()
+        return flask.Response("", 200)
+    elif flask.request.method == "DELETE":
+        status = db.session.query(DocumentStatus).filter(
+                        DocumentStatus.documentName == documentName).first()
+        db.session.delete(status)
+        db.session.commit()
+        return flask.Response("", 200)
+    else:
+        return ("Bad Request Method", 405)
 
 @app.route("/get-file", methods=["GET", "POST", "DELETE"])
 def getFile():
@@ -63,7 +100,8 @@ def getFile():
 
 @app.before_first_request
 def init():
-    pass
+    app.config["DB"] = db
+    db.create_all()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Start THS-Raven', \
