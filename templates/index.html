@@ -6,8 +6,9 @@
 
 <body>
   {% include 'navbar.html' %}
-  <div style="font-size: 16px; font-weight: 300;" class="container mt-5 mb-3" role="main">
-    <form class="my-3 form-border" action="/" method="POST" enctype="multipart/form-data">
+  <div style="font-size: 16px; font-weight: 300;" class="ml-2 mr-3 mt-5 mb-3" role="main">
+    <form style="max-width: 800px;" class="my-3 form-border"
+            action="/" method="POST" enctype="multipart/form-data">
        <input type="file" name="file" />
        <input type="submit" value="Upload"/>
     </form>
@@ -21,12 +22,14 @@
                 <th class="th-sm font-weight-bold">Blowerdoor KW</th>
                 <th class="th-sm font-weight-bold">Bauherr</th>
                 <th data-sorter="datesSorter" class="th-sm font-weight-bold">Dokument Erstellungsdatum (Jahr/Monat/Tag)</th>
-               <th class="th-sm font-weight-bold"></th>
+                <th class="th-sm font-weight-bold"></th>
+                <th class="th-sm font-weight-bold">Sonstige Dateien</th>
             </tr>
         </thead>
         <tbody>
             {% for bd in listContent %}
-            <tr>
+            {% set done =  bd.docName in statusDict and statusDict[bd.docName] %}
+            <tr{% if done %} style="background-color: lightgreen;" {% endif %}>
                <td style="line-height: 45px;"><a target="_blank" href="/get-file?basename={{ bd.docName }}">{{ bd.docName }}</a>
                 {% if bd.outdated %}<p style="color: red;">(neueres Dokument verfügbar: {{ bd.inDocumentDate.strftime("%d.%m.%Y") }})</p>{% endif %}
                </td>
@@ -49,6 +52,24 @@
                             action="/get-file" method="DELETE">
                         <button name="delete" value="{{ bd.docName }}">Löschen</button>
                     </form>
+                    {% if done %}
+                    <form onsubmit="return confirm('Wirklich als NICHT erledigt markieren?')"
+                            action="/document-status" method="POST">
+                        <button name="documentName" value="{{ bd.docName }}">Nicht Erledigt</button>
+                    </form>
+                    {% else %}
+                    <form onsubmit="return confirm('Wirklich als erledigt markieren?')"
+                            action="/document-status" method="POST">
+                        <button name="documentName" value="{{ bd.docName }}">Erledigt</button>
+                    </form>
+                    {% endif %}
+                    <button onclick="addAssotiatedFile()">
+                            Zugehörige Datei hinzufügen
+                    </button>
+               </td>
+               <td style="line-height: 45px;">
+                       energieberechnung.pdf<br>
+                       andereszeug.pdf<br>
                </td>
            </tr>
            {% endfor %}
@@ -62,6 +83,10 @@
             });
             $('.dataTables_length').addClass('bs-select');
         });
+        $('#tableMain').on('click', 'tbody td', function() {
+              console.log('TD cell textContent : ', this.textContent)
+              console.log('location : ', this.parentNode.rowIndex, this.cellIndex)
+        })
     </script>
   </div>
 </body>

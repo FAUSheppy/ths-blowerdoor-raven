@@ -1,2 +1,4 @@
 *.pdf
 *.sqlite
+__pycache__/
+static/
