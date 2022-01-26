@@ -9,6 +9,7 @@ class BlowerdoorData:
         self.inDocumentDate = inDocumentDate
 
         self.outdated = False
+        self.done = False
 
     
 #print("Bauort: " + location)
