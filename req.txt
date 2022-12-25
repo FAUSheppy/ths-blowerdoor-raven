@@ -1,2 +1,4 @@
 flask
 PyMuPDF
+python-dateutil
+flask-sqlalchemy
