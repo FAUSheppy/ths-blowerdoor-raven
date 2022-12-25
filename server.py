@@ -20,9 +20,9 @@ from flask_sqlalchemy import SQLAlchemy
 import eg_geiss_bauherren as parserBackend
 
 app = flask.Flask("THS-Raven")
-db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 class DocumentStatus(db.Model):
     __tablename__ = "document_status"
